@@ -115,7 +115,104 @@ function SegmentLabel({
   );
 }
 
+type GoalKey = "quick" | "real" | "yellow";
+
+const GOALS: Record<GoalKey, {
+  title: string;
+  value: string;
+  desc: string;
+  drawerSubtitle: string;
+  effect: string;
+  actions: { title: string; sub: string; value: string; reason?: string; risk?: string }[];
+}> = {
+  quick: {
+    title: "Быстрое снижение",
+    value: "−500 тыс. ₽",
+    desc: "2 действия, можно начать сегодня",
+    drawerSubtitle: "2 действия, которые можно начать сегодня.",
+    effect: "−500 тыс. ₽",
+    actions: [
+      { title: "Проверить меру по онлайн-расчётам", sub: "мера может работать слабее", value: "−320 тыс. ₽", reason: "3 повторяющихся инцидента за 30 дней", risk: "Массовые сбои в системе онлайн-расчётов" },
+      { title: "Назначить владельца корректировки", sub: "ответственный за изменения", value: "удержит рост" },
+    ],
+  },
+  real: {
+    title: "Реалистичный план",
+    value: "−1.4 млн ₽",
+    desc: "5 действий за неделю",
+    drawerSubtitle: "5 действий, которые могут вернуть риск ближе к жёлтой зоне.",
+    effect: "−1.4 млн ₽",
+    actions: [
+      { title: "Проверить эффективность меры по онлайн-расчётам", sub: "мера может работать слабее", value: "−480 тыс. ₽", reason: "3 повторяющихся инцидента за 30 дней", risk: "Массовые сбои в системе онлайн-расчётов" },
+      { title: "Разобрать повторяющиеся инциденты", sub: "найти корневую причину", value: "−320 тыс. ₽" },
+      { title: "Назначить владельца корректировки", sub: "ответственный за изменения", value: "удержит рост" },
+      { title: "Подтвердить переоценку риска", sub: "обновить оценку", value: "−260 тыс. ₽" },
+      { title: "Создать или усилить превентивную меру", sub: "снизит вероятность", value: "−340 тыс. ₽" },
+    ],
+  },
+  yellow: {
+    title: "До жёлтой зоны",
+    value: "−2.1 млн ₽",
+    desc: "потребуется усилить меры и разобрать инциденты",
+    drawerSubtitle: "Более полный маршрут: меры, инциденты и переоценка рисков.",
+    effect: "−2.1 млн ₽",
+    actions: [
+      { title: "Усилить меру по онлайн-расчётам", sub: "поднять частоту контроля", value: "−480 тыс. ₽" },
+      { title: "Разобрать 3 повторяющихся инцидента", sub: "найти корневую причину", value: "−320 тыс. ₽" },
+      { title: "Проверить риски без эффективных мер", sub: "закрыть пробелы", value: "−410 тыс. ₽" },
+      { title: "Назначить владельцев корректировки", sub: "ответственные за изменения", value: "удержит рост" },
+      { title: "Подтвердить переоценку ключевого риска", sub: "обновить оценку", value: "−260 тыс. ₽" },
+      { title: "Создать превентивную меру", sub: "снизит вероятность", value: "−340 тыс. ₽" },
+      { title: "Запланировать контроль эффективности", sub: "регулярный мониторинг", value: "стабилизирует риск" },
+    ],
+  },
+};
+
+type DrawerMode = null | "plan" | "why" | "news";
+
 function Dashboard() {
+  const [drawer, setDrawer] = useState<DrawerMode>(null);
+  const [goal, setGoal] = useState<GoalKey>("real");
+  const [planStarted, setPlanStarted] = useState(false);
+  const [completed, setCompleted] = useState<Set<number>>(new Set());
+  const [detailIdx, setDetailIdx] = useState<number | null>(null);
+
+  const openPlan = (idx: number | null = null) => {
+    setDetailIdx(idx);
+    setDrawer("plan");
+  };
+
+  const goalData = GOALS[goal];
+  const total = goalData.actions.length;
+  const doneCount = completed.size;
+  const savedSum = useMemo(() => {
+    let s = 0;
+    completed.forEach((i) => {
+      const m = goalData.actions[i]?.value.match(/−(\d+)/);
+      if (m) s += parseInt(m[1]);
+    });
+    return s;
+  }, [completed, goalData]);
+
+  const toggleAction = (i: number) => {
+    setCompleted((prev) => {
+      const next = new Set(prev);
+      if (next.has(i)) next.delete(i);
+      else next.add(i);
+      return next;
+    });
+  };
+
+  const selectGoal = (g: GoalKey) => {
+    setGoal(g);
+    setCompleted(new Set());
+  };
+
+  const startPlan = () => {
+    setPlanStarted(true);
+    setCompleted(new Set());
+  };
+
   return (
     <div className="min-h-screen bg-[#F4F5F7] flex font-sans text-slate-900">
       {/* Sidebar */}
