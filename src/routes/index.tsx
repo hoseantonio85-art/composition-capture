@@ -368,7 +368,15 @@ function Dashboard() {
           </div>
 
           {/* Right column — Риск-пульс */}
-          <RiskPulse />
+          <RiskPulse
+            planStarted={planStarted}
+            doneCount={doneCount}
+            total={total}
+            savedSum={savedSum}
+            goalEffect={goalData.effect}
+            openPlan={openPlan}
+            openWhy={() => setDrawer("why")}
+          />
         </div>
 
         {/* News */}
