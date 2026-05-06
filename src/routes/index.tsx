@@ -363,3 +363,159 @@ function Dashboard() {
     </div>
   );
 }
+
+function RiskPulse() {
+  const [open, setOpen] = useState(false);
+  const progress = 32;
+
+  const actions = [
+    { title: "Проверить меру по онлайн-расчётам", value: "−480 тыс. ₽" },
+    { title: "Разобрать 3 повторяющихся инцидента", value: "−320 тыс. ₽" },
+    { title: "Назначить владельца корректировки", value: "удержит рост" },
+  ];
+
+  return (
+    <>
+      <div className="flex flex-col gap-3">
+        {/* Main pulse card */}
+        <div className="bg-white rounded-2xl p-5 shadow-[0_2px_12px_rgba(15,23,42,0.04)]">
+          <div className="flex items-start gap-2.5 mb-3">
+            <div className="w-7 h-7 rounded-md bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shrink-0 mt-0.5">
+              <Sparkles className="w-3.5 h-3.5 text-white" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-semibold">Риск-пульс</h3>
+                <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-semibold">
+                  Высокий
+                </span>
+              </div>
+              <p className="text-[12px] text-slate-500 leading-relaxed mt-1.5">
+                Потенциальные потери выросли, но основная нагрузка сосредоточена в 3 зонах. Я могу собрать короткий план снижения.
+              </p>
+            </div>
+          </div>
+
+          {/* Sums */}
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            <div className="bg-slate-50 rounded-xl p-3">
+              <div className="text-[11px] text-slate-500 mb-1.5">Прямые потери</div>
+              <div className="flex items-baseline gap-1">
+                <span className="text-xl font-bold">5.1</span>
+                <span className="text-[11px] text-slate-500">млн ₽</span>
+              </div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3">
+              <div className="text-[11px] text-slate-500 mb-1.5">Потенциальные</div>
+              <div className="flex items-baseline gap-1">
+                <span className="text-xl font-bold">6.2</span>
+                <span className="text-[11px] text-slate-500">млн ₽</span>
+              </div>
+              <div className="flex items-center gap-1 mt-1 text-[10px] text-amber-600 font-medium">
+                <ArrowUp className="w-2.5 h-2.5" /> 320 тыс. ₽
+              </div>
+            </div>
+          </div>
+
+          {/* Goal */}
+          <div className="border-t border-slate-100 pt-4 mb-4">
+            <div className="flex items-baseline justify-between mb-1">
+              <span className="text-[12px] text-slate-500">До комфортного уровня</span>
+              <span className="text-sm font-bold text-emerald-600">−1.4 млн ₽</span>
+            </div>
+            <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mb-2">
+              <div
+                className="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <p className="text-[11px] text-slate-500">
+              5 действий могут вернуть риск в жёлтую зону
+            </p>
+          </div>
+
+          {/* Recommendations */}
+          <div className="mb-4">
+            <div className="text-[12px] font-semibold text-slate-700 mb-2">
+              Что можно скорректировать
+            </div>
+            <ul className="space-y-2">
+              {actions.map((a, i) => (
+                <li key={i} className="flex items-start gap-2 text-[12px]">
+                  <span className="w-1 h-1 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
+                  <span className="flex-1 text-slate-600 leading-snug">{a.title}</span>
+                  <span className="text-[11px] font-medium text-slate-500 shrink-0">{a.value}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* CTAs */}
+          <button
+            onClick={() => setOpen(true)}
+            className="w-full bg-gradient-to-r from-emerald-400 to-teal-500 text-white text-sm font-medium py-2.5 rounded-xl shadow-sm hover:opacity-95 transition"
+          >
+            Собрать план снижения
+          </button>
+          <button className="w-full text-[12px] text-slate-500 hover:text-slate-700 mt-2 py-1">
+            Почему риск вырос?
+          </button>
+        </div>
+      </div>
+
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent className="w-[440px] sm:max-w-[440px] bg-[#F4F5F7] overflow-y-auto">
+          <SheetHeader className="space-y-2 mb-5">
+            <SheetTitle className="text-xl font-semibold">План снижения риска</SheetTitle>
+            <SheetDescription className="text-sm text-slate-500 leading-relaxed">
+              Я собрал действия, которые быстрее всего влияют на прогнозные потери.
+            </SheetDescription>
+          </SheetHeader>
+
+          <div className="space-y-3 mb-6">
+            {[
+              { title: "Быстрое снижение", value: "−500 тыс. ₽", desc: "2 действия, можно начать сегодня", accent: "from-emerald-400 to-teal-500" },
+              { title: "Реалистичный план", value: "−1.4 млн ₽", desc: "5 действий за неделю", accent: "from-blue-400 to-indigo-500", highlight: true },
+              { title: "До жёлтой зоны", value: "", desc: "потребуется усилить меры и разобрать инциденты", accent: "from-amber-300 to-orange-400" },
+            ].map((g, i) => (
+              <button
+                key={i}
+                className={`w-full text-left bg-white rounded-2xl p-4 shadow-[0_2px_12px_rgba(15,23,42,0.04)] border-2 ${g.highlight ? "border-emerald-300" : "border-transparent"} hover:border-emerald-200 transition`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-semibold">{g.title}</span>
+                  {g.value && <span className="text-sm font-bold text-emerald-600">{g.value}</span>}
+                </div>
+                <p className="text-xs text-slate-500 leading-relaxed">{g.desc}</p>
+              </button>
+            ))}
+          </div>
+
+          <div className="bg-white rounded-2xl p-5 shadow-[0_2px_12px_rgba(15,23,42,0.04)] mb-6">
+            <div className="text-sm font-semibold mb-3">Действия</div>
+            <ol className="space-y-3">
+              {[
+                "Проверить эффективность меры по онлайн-расчётам",
+                "Разобрать повторяющиеся инциденты",
+                "Назначить владельца корректировки",
+                "Подтвердить переоценку риска",
+                "Создать или усилить превентивную меру",
+              ].map((step, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-emerald-50 text-emerald-600 text-[11px] font-semibold flex items-center justify-center shrink-0">
+                    {i + 1}
+                  </span>
+                  <span className="text-[13px] text-slate-700 leading-snug pt-0.5">{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <button className="w-full bg-gradient-to-r from-emerald-400 to-teal-500 text-white text-sm font-medium py-3 rounded-xl shadow-sm">
+            Запустить план
+          </button>
+        </SheetContent>
+      </Sheet>
+    </>
+  );
+}
