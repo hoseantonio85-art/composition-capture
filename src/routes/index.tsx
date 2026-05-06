@@ -385,47 +385,45 @@ function Dashboard() {
             <h3 className="text-lg font-semibold">Я собрал важные изменения в законах и СМИ</h3>
             <button className="text-xs text-slate-500 hover:text-slate-700">Показать все</button>
           </div>
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              {
-                tag1: "Законодательство",
-                tag1c: "text-slate-600",
-                tag2: "Персональные данные",
-                tag2c: "text-orange-500",
-                title: "Обработка персональных данных",
-                desc: "Ужесточились требования к обработке персональных данных и существенно выросли штрафы за выявленные нарушения.",
-                ring: "from-indigo-200",
-                icon: Scale,
-              },
-              {
-                tag1: "Новость",
-                tag1c: "text-blue-500",
-                tag2: "Экономика",
-                tag2c: "text-orange-500",
-                title: "Магазин-склад Самоката закрыт Роспотребнадзором",
-                desc: "Невский районный суд Петербурга закрыл магазин-склад ООО 'Умный Ритейл' в Ростове-на-Дону по иску Роспотребнадзор…",
-                ring: "from-violet-200",
-                icon: Megaphone,
-              },
-              {
-                tag1: "Законодательство",
-                tag1c: "text-slate-600",
-                tag2: "Налоговое право",
-                tag2c: "text-orange-500",
-                title: "Ужесточение требований к обработке персональных данных",
-                desc: "Ужесточились требования к обработке персональных данных и существенно выросли штрафы за выявленные нарушения.",
-                ring: "from-pink-200",
-                icon: Scale,
-              },
-            ].map((c, i) => {
-              const Icon = c.icon;
-              return (
-                <div
-                  key={i}
-                  className={`bg-white rounded-2xl p-5 shadow-[0_2px_12px_rgba(15,23,42,0.04)] border border-transparent bg-gradient-to-br ${c.ring} via-white to-white`}
-                  style={{ backgroundOrigin: "border-box" }}
-                >
-                  <div className="bg-white rounded-xl">
+          <div
+            className="rounded-3xl p-4 shadow-[0_2px_12px_rgba(15,23,42,0.04)]"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(165,180,252,0.45), rgba(186,230,253,0.45)) border-box",
+              border: "1px solid transparent",
+              backgroundClip: "padding-box, border-box",
+              backgroundOrigin: "border-box",
+              backgroundImage:
+                "linear-gradient(#fff,#fff), linear-gradient(135deg, rgba(165,180,252,0.6), rgba(186,230,253,0.6))",
+            }}
+          >
+            <div className="grid grid-cols-3 gap-4">
+              {[
+                {
+                  tag1: "Законодательство", tag1c: "text-slate-600",
+                  tag2: "Персональные данные", tag2c: "text-orange-500",
+                  title: "Обработка персональных данных",
+                  desc: "Ужесточились требования к обработке персональных данных и существенно выросли штрафы за выявленные нарушения.",
+                  icon: Scale,
+                },
+                {
+                  tag1: "Новость", tag1c: "text-blue-500",
+                  tag2: "Экономика", tag2c: "text-orange-500",
+                  title: "Магазин-склад Самоката закрыт Роспотребнадзором",
+                  desc: "Невский районный суд Петербурга закрыл магазин-склад ООО 'Умный Ритейл' в Ростове-на-Дону по иску Роспотребнадзор…",
+                  icon: Megaphone,
+                },
+                {
+                  tag1: "Законодательство", tag1c: "text-slate-600",
+                  tag2: "Налоговое право", tag2c: "text-orange-500",
+                  title: "Ужесточение требований к обработке персональных данных",
+                  desc: "Ужесточились требования к обработке персональных данных и существенно выросли штрафы за выявленные нарушения.",
+                  icon: Scale,
+                },
+              ].map((c, i) => {
+                const Icon = c.icon;
+                return (
+                  <div key={i} className="bg-white rounded-2xl p-5">
                     <div className="flex items-center gap-2 mb-3 text-xs">
                       <div className="flex items-center gap-1.5">
                         <div className="w-6 h-6 rounded-md bg-slate-100 flex items-center justify-center">
@@ -438,13 +436,16 @@ function Dashboard() {
                     </div>
                     <h4 className="text-sm font-semibold mb-2 leading-snug">{c.title}</h4>
                     <p className="text-xs text-slate-500 leading-relaxed mb-3">{c.desc}</p>
-                    <button className="text-xs font-medium text-blue-500 inline-flex items-center gap-1">
+                    <button
+                      onClick={() => setDrawer("news")}
+                      className="text-xs font-medium text-blue-500 inline-flex items-center gap-1 hover:underline"
+                    >
                       Принять меры <ChevronRight className="w-3 h-3" />
                     </button>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
 
