@@ -467,6 +467,25 @@ function Dashboard() {
           </button>
         </div>
       </main>
+
+      <PlanDrawer
+        open={drawer === "plan"}
+        onClose={() => setDrawer(null)}
+        goal={goal}
+        selectGoal={selectGoal}
+        planStarted={planStarted}
+        startPlan={startPlan}
+        completed={completed}
+        toggleAction={toggleAction}
+        detailIdx={detailIdx}
+        setDetailIdx={setDetailIdx}
+      />
+      <WhyDrawer
+        open={drawer === "why"}
+        onClose={() => setDrawer(null)}
+        goToPlan={() => setDrawer("plan")}
+      />
+      <NewsDrawer open={drawer === "news"} onClose={() => setDrawer(null)} />
     </div>
   );
 }
