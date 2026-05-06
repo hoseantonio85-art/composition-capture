@@ -628,3 +628,290 @@ function RiskPulse({
   );
 }
 
+
+function PlanDrawer({
+  open, onClose, goal, selectGoal, planStarted, startPlan,
+  completed, toggleAction, detailIdx, setDetailIdx,
+}: {
+  open: boolean;
+  onClose: () => void;
+  goal: GoalKey;
+  selectGoal: (g: GoalKey) => void;
+  planStarted: boolean;
+  startPlan: () => void;
+  completed: Set<number>;
+  toggleAction: (i: number) => void;
+  detailIdx: number | null;
+  setDetailIdx: (i: number | null) => void;
+}) {
+  const data = GOALS[goal];
+  const total = data.actions.length;
+  const doneCount = completed.size;
+  const progress = Math.round((doneCount / total) * 100);
+
+  let motivation = "";
+  if (doneCount >= total && total > 0) {
+    motivation = "План выполнен. Потенциальные потери снижены примерно на выбранную сумму.";
+  } else if (doneCount >= 3) {
+    motivation = "Вы закрыли основные быстрые действия. Риск стал ближе к жёлтой зоне.";
+  } else if (doneCount >= 1) {
+    motivation = "Хороший старт. Это действие уже снижает прогнозную нагрузку.";
+  }
+
+  const detail = detailIdx !== null ? data.actions[detailIdx] : null;
+
+  return (
+    <Sheet open={open} onOpenChange={(v) => { if (!v) { onClose(); setDetailIdx(null); } }}>
+      <SheetContent className="w-[460px] sm:max-w-[460px] bg-[#F4F5F7] overflow-y-auto">
+        {detail ? (
+          <div>
+            <button
+              onClick={() => setDetailIdx(null)}
+              className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700 mb-4"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" /> Назад к плану
+            </button>
+            <h2 className="text-xl font-semibold mb-2">{detail.title}</h2>
+            <p className="text-sm text-slate-500 leading-relaxed mb-5">
+              Инциденты повторяются, поэтому текущая мера может работать слабее, чем ожидалось. Проверьте владельца, частоту контроля и последние срабатывания.
+            </p>
+            <div className="bg-white rounded-2xl p-5 shadow-[0_2px_12px_rgba(15,23,42,0.04)] mb-5 space-y-3">
+              <DetailField label="Вклад в снижение" value={detail.value} accent />
+              <DetailField label="Связанный риск" value={detail.risk || "Массовые сбои в системе онлайн-расчётов"} />
+              <DetailField label="Причина рекомендации" value={detail.reason || "3 повторяющихся инцидента за 30 дней"} />
+              <DetailField label="Следующий шаг" value="Открыть меру" />
+            </div>
+            <div className="space-y-2">
+              <button className="w-full bg-gradient-to-r from-emerald-400 to-teal-500 text-white text-sm font-medium py-3 rounded-xl shadow-sm">
+                Открыть меру
+              </button>
+              <button
+                onClick={() => {
+                  if (detailIdx !== null && !completed.has(detailIdx)) toggleAction(detailIdx);
+                  setDetailIdx(null);
+                  if (!planStarted) startPlan();
+                }}
+                className="w-full bg-white text-emerald-600 text-sm font-medium py-3 rounded-xl border border-emerald-200"
+              >
+                Отметить выполненным
+              </button>
+              <button
+                onClick={() => setDetailIdx(null)}
+                className="w-full text-sm text-slate-500 py-2"
+              >
+                Назад к плану
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <SheetHeader className="space-y-2 mb-5">
+              <SheetTitle className="text-xl font-semibold">
+                {planStarted ? "План запущен" : "План снижения риска"}
+              </SheetTitle>
+              <SheetDescription className="text-sm text-slate-500 leading-relaxed">
+                {planStarted
+                  ? "Я буду показывать прогресс и подсказывать следующий лучший шаг."
+                  : data.drawerSubtitle}
+              </SheetDescription>
+            </SheetHeader>
+
+            {!planStarted && (
+              <div className="space-y-3 mb-6">
+                {(Object.keys(GOALS) as GoalKey[]).map((k) => {
+                  const g = GOALS[k];
+                  const active = goal === k;
+                  return (
+                    <button
+                      key={k}
+                      onClick={() => selectGoal(k)}
+                      className={`w-full text-left bg-white rounded-2xl p-4 shadow-[0_2px_12px_rgba(15,23,42,0.04)] border-2 transition ${
+                        active ? "border-emerald-400" : "border-transparent hover:border-emerald-100"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-semibold">{g.title}</span>
+                        {g.value && <span className="text-sm font-bold text-emerald-600">{g.value}</span>}
+                      </div>
+                      <p className="text-xs text-slate-500 leading-relaxed">{g.desc}</p>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {planStarted && (
+              <div className="bg-white rounded-2xl p-4 shadow-[0_2px_12px_rgba(15,23,42,0.04)] mb-4">
+                <div className="flex items-baseline justify-between mb-2">
+                  <span className="text-[12px] text-slate-500">{doneCount} из {total} действий выполнено</span>
+                  <span className="text-sm font-bold text-emerald-600">{progress}%</span>
+                </div>
+                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full transition-all"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="bg-white rounded-2xl p-4 shadow-[0_2px_12px_rgba(15,23,42,0.04)] mb-5">
+              <div className="text-sm font-semibold mb-3 px-1">Действия</div>
+              <ul className="space-y-1">
+                {data.actions.map((a, i) => {
+                  const done = completed.has(i);
+                  return (
+                    <li key={i}>
+                      <div
+                        className={`flex items-center gap-3 p-2.5 rounded-xl transition ${
+                          done ? "bg-emerald-50" : "hover:bg-slate-50"
+                        }`}
+                      >
+                        {planStarted ? (
+                          <button
+                            onClick={() => toggleAction(i)}
+                            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition ${
+                              done
+                                ? "bg-emerald-500 border-emerald-500 text-white"
+                                : "border-slate-300 bg-white"
+                            }`}
+                          >
+                            {done && <Check className="w-3 h-3" />}
+                          </button>
+                        ) : (
+                          <span className="w-6 h-6 rounded-full bg-emerald-50 text-emerald-600 text-[11px] font-semibold flex items-center justify-center shrink-0">
+                            {i + 1}
+                          </span>
+                        )}
+                        <button
+                          onClick={() => setDetailIdx(i)}
+                          className="flex-1 text-left flex items-center gap-2"
+                        >
+                          <div className="flex-1">
+                            <div className={`text-[13px] leading-snug ${done ? "text-slate-400 line-through" : "text-slate-700"}`}>
+                              {a.title}
+                            </div>
+                            <div className="text-[11px] text-slate-400 mt-0.5">{a.sub}</div>
+                          </div>
+                          <span className="text-[11px] font-medium text-emerald-600 shrink-0">{a.value}</span>
+                          <ChevronRight className="w-4 h-4 text-slate-300" />
+                        </button>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            {motivation && (
+              <div className="bg-emerald-50 border border-emerald-100 text-emerald-700 text-[12px] leading-relaxed rounded-xl p-3 mb-5">
+                {motivation}
+              </div>
+            )}
+
+            {!planStarted && (
+              <button
+                onClick={startPlan}
+                className="w-full bg-gradient-to-r from-emerald-400 to-teal-500 text-white text-sm font-medium py-3 rounded-xl shadow-sm"
+              >
+                Запустить план
+              </button>
+            )}
+          </>
+        )}
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+function DetailField({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div className="flex items-start justify-between gap-3 text-sm">
+      <span className="text-slate-500 text-[12px]">{label}</span>
+      <span className={`text-right font-medium ${accent ? "text-emerald-600" : "text-slate-800"}`}>{value}</span>
+    </div>
+  );
+}
+
+function WhyDrawer({ open, onClose, goToPlan }: { open: boolean; onClose: () => void; goToPlan: () => void }) {
+  const reasons = [
+    { title: "Повторяющиеся инциденты", value: "+180 тыс. ₽" },
+    { title: "Мера работает слабее ожидаемого", value: "+90 тыс. ₽" },
+    { title: "Высокие риски без мер", value: "+50 тыс. ₽" },
+  ];
+  return (
+    <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
+      <SheetContent className="w-[440px] sm:max-w-[440px] bg-[#F4F5F7] overflow-y-auto">
+        <SheetHeader className="space-y-2 mb-5">
+          <SheetTitle className="text-xl font-semibold">Почему риск вырос</SheetTitle>
+          <SheetDescription className="text-sm text-slate-500 leading-relaxed">
+            Потенциальные потери выросли на 320 тыс. ₽ за 30 дней. Основной вклад дали повторяющиеся инциденты в онлайн-расчётах и риски без эффективных мер.
+          </SheetDescription>
+        </SheetHeader>
+        <div className="space-y-3 mb-6">
+          {reasons.map((r, i) => (
+            <div key={i} className="bg-white rounded-2xl p-4 shadow-[0_2px_12px_rgba(15,23,42,0.04)] flex items-center justify-between">
+              <span className="text-sm font-medium text-slate-800">{r.title}</span>
+              <span className="text-sm font-bold text-rose-600">{r.value}</span>
+            </div>
+          ))}
+        </div>
+        <button
+          onClick={goToPlan}
+          className="w-full bg-gradient-to-r from-emerald-400 to-teal-500 text-white text-sm font-medium py-3 rounded-xl shadow-sm"
+        >
+          Собрать план снижения
+        </button>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+function NewsDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [created, setCreated] = useState(false);
+  const [linked, setLinked] = useState(false);
+  return (
+    <Sheet open={open} onOpenChange={(v) => { if (!v) { onClose(); setCreated(false); setLinked(false); } }}>
+      <SheetContent className="w-[440px] sm:max-w-[440px] bg-[#F4F5F7] overflow-y-auto">
+        <SheetHeader className="space-y-2 mb-5">
+          <SheetTitle className="text-xl font-semibold">Рекомендации по новости</SheetTitle>
+          <SheetDescription className="text-sm text-slate-500 leading-relaxed">
+            Эта новость может повлиять на операционные риски. Я нашёл связанные риски и возможные меры.
+          </SheetDescription>
+        </SheetHeader>
+        <div className="bg-white rounded-2xl p-4 shadow-[0_2px_12px_rgba(15,23,42,0.04)] mb-3">
+          <div className="text-[12px] font-semibold text-slate-500 mb-2">Связанные риски</div>
+          <ul className="space-y-2 text-sm text-slate-700">
+            <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-rose-400" />Нарушения при обработке персональных данных</li>
+            <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-amber-400" />Штрафы регулятора</li>
+          </ul>
+        </div>
+        <div className="bg-white rounded-2xl p-4 shadow-[0_2px_12px_rgba(15,23,42,0.04)] mb-5">
+          <div className="text-[12px] font-semibold text-slate-500 mb-2">Возможные меры</div>
+          <ul className="space-y-2 text-sm text-slate-700">
+            <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />Аудит хранения персональных данных</li>
+            <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />Обновить регламент обработки</li>
+          </ul>
+        </div>
+        <div className="space-y-2">
+          <button
+            onClick={() => setCreated(true)}
+            className={`w-full text-sm font-medium py-3 rounded-xl shadow-sm ${
+              created ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-gradient-to-r from-emerald-400 to-teal-500 text-white"
+            }`}
+          >
+            {created ? "Мера создана" : "Создать меру"}
+          </button>
+          <button
+            onClick={() => setLinked(true)}
+            className={`w-full text-sm font-medium py-3 rounded-xl border ${
+              linked ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-white text-slate-700 border-slate-200"
+            }`}
+          >
+            {linked ? "Связано с риском" : "Связать с риском"}
+          </button>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
