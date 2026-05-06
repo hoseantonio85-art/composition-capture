@@ -269,74 +269,8 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* Right column */}
-          <div className="flex flex-col gap-3">
-            <div className="bg-white rounded-2xl p-4 shadow-[0_2px_12px_rgba(15,23,42,0.04)] flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-md bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
-                  <div className="w-2.5 h-2.5 bg-white rotate-45" />
-                </div>
-                <span className="text-sm font-semibold">Что происходит</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-slate-400" />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white rounded-2xl p-4 shadow-[0_2px_12px_rgba(15,23,42,0.04)]">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs text-slate-500">Общие потери</span>
-                  <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-semibold">85%</span>
-                </div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-bold">5.1</span>
-                  <span className="text-xs text-slate-500">млн/₽</span>
-                </div>
-                <div className="text-[11px] text-slate-400 mt-1">5.35 млн/₽</div>
-              </div>
-              <div className="bg-white rounded-2xl p-4 shadow-[0_2px_12px_rgba(15,23,42,0.04)]">
-                <div className="text-xs text-slate-500 mb-3">Потенциальные потери</div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-bold">6.2</span>
-                  <span className="text-xs text-slate-500">млн/₽</span>
-                </div>
-                <div className="flex items-center gap-1 mt-1 text-[11px] text-amber-600">
-                  <ArrowUp className="w-3 h-3" /> 320 тыс./₽
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-4 shadow-[0_2px_12px_rgba(15,23,42,0.04)]">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-semibold">Зоны внимания</span>
-                <span className="text-xs text-slate-400">30 дней</span>
-              </div>
-              <div className="space-y-2">
-                {[0, 1, 2].map((i) => (
-                  <div key={i} className="bg-slate-50 rounded-xl p-3">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[11px] text-slate-500">ИТ и Непрерывность</span>
-                      <span className="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
-                        Лимит исчерпан
-                      </span>
-                    </div>
-                    <div className="text-[13px] font-semibold text-slate-800">
-                      Массовые сбои в системе онлайн-расчётов
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-4 shadow-[0_2px_12px_rgba(15,23,42,0.04)]">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-sm font-semibold">Высокие риски без мер</span>
-                <span className="text-sm font-semibold text-slate-700 ml-auto">6 из 18</span>
-              </div>
-              <p className="text-xs text-slate-500 mt-2">
-                11% высоких рисков не имеют эффективных мер
-              </p>
-            </div>
-          </div>
+          {/* Right column — Риск-пульс */}
+          <RiskPulse />
         </div>
 
         {/* News */}
